@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { debug } from "@/lib/debug";
 import { guard } from "@/lib/auth";
 import { list, remove, save } from "@/lib/content";
 import type { Collection, Entity } from "@/lib/types";
@@ -39,6 +40,7 @@ export async function PUT(req: Request, { params }: Ctx) {
   if (!parsed.data.title.tr.trim()) return NextResponse.json({ error: "Türkçe başlık zorunlu" }, { status: 400 });
   const saved = await save(collection, parsed.data as never as Entity & never);
   refresh();
+  debug("entity.save", { collection, id: saved.id, slug: saved.slug });
   return NextResponse.json(saved);
 }
 
@@ -50,5 +52,6 @@ export async function DELETE(req: Request, { params }: Ctx) {
   if (!valid(collection) || !id) return NextResponse.json({ error: "Geçersiz istek" }, { status: 400 });
   await remove(collection, id);
   refresh();
+  debug("entity.delete", { collection, id });
   return NextResponse.json({ ok: true });
 }

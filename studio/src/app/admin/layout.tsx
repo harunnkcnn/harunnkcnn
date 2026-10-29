@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Yönetim Paneli", robots: { index: f
 
 export default function AdminRoot({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr">
+    <html lang="tr" data-scroll-behavior="smooth">
       <body className="min-h-screen">{children}</body>
     </html>
   );

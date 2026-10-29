@@ -36,7 +36,7 @@ export default async function Layout({ children, params }: { children: React.Rea
   const s = await getSettings();
   const d = dt(lang);
   return (
-    <html lang={lang}>
+    <html lang={lang} data-scroll-behavior="smooth">
       <body className="grain min-h-screen antialiased">
         <JsonLd data={{
           "@context": "https://schema.org", "@type": "Person", name: s.name, jobTitle: t(s.role, lang), url: `${SITE_URL}/${lang}`,

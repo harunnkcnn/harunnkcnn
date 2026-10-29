@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { debug } from "@/lib/debug";
 import { checkPassword, createSession, loginFailed, loginOk, loginThrottle } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -8,9 +9,11 @@ export async function POST(req: Request) {
   const { password } = (await req.json().catch(() => ({}))) as { password?: string };
   if (!password || !checkPassword(password)) {
     loginFailed(ip);
+    debug("login.fail", { ip });
     return NextResponse.json({ error: "Şifre hatalı" }, { status: 401 });
   }
   loginOk(ip);
+  debug("login.ok", { ip });
   await createSession();
   return NextResponse.json({ ok: true });
 }

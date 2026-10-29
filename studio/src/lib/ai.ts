@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { DATA_DIR, readJson, updateJson, uid, writeJson } from "./db";
+import { debug } from "./debug";
 import type { AiLogEntry, AiSettings } from "./types";
 
 export const AI_DEFAULTS: AiSettings = {
@@ -58,9 +59,11 @@ async function timed<T>(provider: AiLogEntry["provider"], action: string, fn: ()
   try {
     const r = await fn();
     await logCall({ provider, action, ok: true, ms: Date.now() - t0 });
+    debug("ai.ok", { provider, action, ms: Date.now() - t0 });
     return r;
   } catch (err) {
     await logCall({ provider, action, ok: false, ms: Date.now() - t0, error: (err as Error).message.slice(0, 300) });
+    debug("ai.fail", { provider, action, ms: Date.now() - t0, error: (err as Error).message.slice(0, 200) });
     throw err;
   }
 }

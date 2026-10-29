@@ -63,7 +63,7 @@ export function EntityEditor({ collection, initial }: { collection: Collection; 
   const [aiBusy, setAiBusy] = useState(false);
   const { msg, show } = useToast();
   const label = LABELS[collection];
-  const isNew = !initial.id;
+  const [isNew, setIsNew] = useState(!initial.id);
   const hasSeo = collection !== "services";
   const bodyKey = collection === "posts" ? "excerpt" : "summary";
   const report: SeoReport | null = useMemo(() => (hasSeo ? analyzeSeo(seoInputOf(e, lang)) : null), [e, lang, hasSeo]);
@@ -80,8 +80,11 @@ export function EntityEditor({ collection, initial }: { collection: Collection; 
       const saved = await api<Entity>(`/api/admin/entity/${collection}`, "PUT", body);
       setE(saved as E);
       show("ok", "Kaydedildi");
-      if (isNew) router.replace(`/admin/${collection}/${saved.id}`);
-      router.refresh();
+      if (isNew) {
+        // Sayfayı yeniden yüklemeden adresi güncelle; yoksa bildirim ve form durumu sıfırlanır.
+        window.history.replaceState(null, "", `/admin/${collection}/${saved.id}`);
+        setIsNew(false);
+      }
     } catch (err) { show("err", (err as Error).message); }
     setSaving(false);
   }
